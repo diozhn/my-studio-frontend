@@ -1,7 +1,10 @@
-import { Get } from "@/app/http/axios";
+import { Get, PostFormData } from "@/app/http/axios";
 
 
 export interface ArtWork {
+  image_url: string | Blob | undefined;
+  width: any;
+  size: any;
   id: string;
   title: string;
   caption: string;
@@ -38,4 +41,24 @@ export const getArtworks = async (filters: ArtworksFilters) => {
   });
 
   return await Get<ArtworksResponse>(`/artworks?${params.toString()}`);
+};
+
+export interface UploadArtworkParams {
+  title: string;
+  caption: string;
+  image: File;
 }
+
+export interface UploadArtworkResponse {
+  message: string;
+  artwork?: ArtWork;
+}
+
+export const uploadArtwork = async (params: UploadArtworkParams) => {
+  const formData = new FormData();
+  formData.append("title", params.title);
+  formData.append("caption", params.caption);
+  formData.append("image", params.image);
+
+  return await PostFormData<UploadArtworkResponse>("/artworks", formData);
+};
